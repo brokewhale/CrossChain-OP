@@ -5,7 +5,7 @@ import {
   parseEther,
   formatEther,
 } from 'viem';
-import { sepolia, optimismSepolia } from 'viem/chains';
+import { sepolia, baseSepolia } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import {
   getL2TransactionHashes,
@@ -42,13 +42,13 @@ const walletClientL1 = createWalletClient({
 
 // Initialize L2 clients
 const publicClientL2 = createPublicClient({
-  chain: optimismSepolia,
+  chain: baseSepolia,
   transport: http(L2_RPC_URL),
 }).extend(publicActionsL2());
 
 const walletClientL2 = createWalletClient({
   account,
-  chain: optimismSepolia,
+  chain: baseSepolia,
   transport: http(L2_RPC_URL),
 }).extend(walletActionsL2());
 
@@ -64,7 +64,7 @@ const main = async () => {
 
 async function depositETH() {
   const depositArgs = await publicClientL2.buildDepositTransaction({
-    mint: parseEther('0.0001'),
+    mint: parseEther('1'),
     to: account.address,
   });
 
@@ -86,4 +86,13 @@ async function depositETH() {
   console.log('Deposit completed successfully!');
 }
 
+async function getTXRe() {
+  const hash =
+    '0xcfd81f6d3a29a9a6c3b2ac72e45212d34f966ed0070e4b391ad36a9f6bbe538d';
+  const l2Receipt = await publicClientL2.waitForTransactionReceipt({
+    hash,
+  });
+  console.log('L2 transaction confirmed:', l2Receipt);
+  console.log('Deposit completed successfully!');
+}
 main().catch(console.error);

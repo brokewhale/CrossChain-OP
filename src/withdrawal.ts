@@ -5,7 +5,7 @@ import {
   parseEther,
   formatEther,
 } from 'viem';
-import { sepolia, optimismSepolia } from 'viem/chains';
+import { mainnet, base } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
 import {
   getL2TransactionHashes,
@@ -30,40 +30,42 @@ const account = privateKeyToAccount(PRIVATE_KEY as `0x${string}`);
 
 // Initialize L1 clients
 const publicClientL1 = createPublicClient({
-  chain: sepolia,
+  chain: mainnet,
   transport: http(L1_RPC_URL),
 }).extend(publicActionsL1());
 
 const walletClientL1 = createWalletClient({
   account,
-  chain: sepolia,
+  chain: mainnet,
   transport: http(L1_RPC_URL),
 }).extend(walletActionsL1());
 
 // Initialize L2 clients
 const publicClientL2 = createPublicClient({
-  chain: optimismSepolia,
+  chain: base,
   transport: http(L2_RPC_URL),
 }).extend(publicActionsL2());
 
 const walletClientL2 = createWalletClient({
   account,
-  chain: optimismSepolia,
+  chain: base,
   transport: http(L2_RPC_URL),
 }).extend(walletActionsL2());
 
 async function withdrawETH() {
   try {
     // Step 1: Initiate withdrawal
-    console.log('Step 1: Initiating withdrawal...');
-    const withdrawArgs = await publicClientL1.buildInitiateWithdrawal({
-      value: parseEther('0.0001'),
-      to: account.address,
-    });
+    // console.log('Step 1: Initiating withdrawal...');
+    // const withdrawArgs = await publicClientL1.buildInitiateWithdrawal({
+    //   value: parseEther('0.0001'),
+    //   to: account.address,
+    // });
 
-    const withdrawalHash = await walletClientL2.initiateWithdrawal(
-      withdrawArgs
-    );
+    // const withdrawalHash = await walletClientL2.initiateWithdrawal(
+    //   withdrawArgs
+    // );
+    const withdrawalHash =
+      '0xba9b0aac9f7585a0bd0e51d6c582c2b8d14405ecccddf332ff4817fe03b4339e';
 
     console.log(`Withdraw transaction hash on L2: ${withdrawalHash}`);
 
@@ -89,12 +91,14 @@ async function withdrawETH() {
       withdrawal,
     });
 
-    console.log('Proving withdrawal...');
-    const proveHash = await walletClientL1.proveWithdrawal(proveArgs);
-    const proveReceipt = await publicClientL1.waitForTransactionReceipt({
-      hash: proveHash,
-    });
-    console.log('Step 2 completed: Withdrawal proven', proveReceipt);
+    console.log('proveArgs', proveArgs);
+
+    // console.log('Proving withdrawal...');
+    // const proveHash = await walletClientL1.proveWithdrawal(proveArgs);
+    // const proveReceipt = await publicClientL1.waitForTransactionReceipt({
+    //   hash: proveHash,
+    // });
+    // console.log('Step 2 completed: Withdrawal proven', proveReceipt);
 
     //   // Step 3: Wait and finalize withdrawal
     //   console.log('Step 3: Waiting for withdrawal to be ready to finalize...');
