@@ -4,6 +4,7 @@ import {
   createWalletClient,
   parseEther,
   formatEther,
+  encodeFunctionData,
 } from 'viem';
 import { mainnet, base } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
@@ -15,6 +16,7 @@ import {
   walletActionsL2,
 } from 'viem/op-stack';
 import 'dotenv/config';
+import { optimismPortal2Abi } from './optimismPortal2Abi';
 
 // Setup environment and account
 const PRIVATE_KEY = process.env.TUTORIAL_PRIVATE_KEY;
@@ -91,7 +93,18 @@ async function withdrawETH() {
       withdrawal,
     });
 
-    console.log('proveArgs', proveArgs);
+    const proveWithdrawalFunctionData = encodeFunctionData({
+      abi: optimismPortal2Abi,
+      functionName: 'proveWithdrawalTransaction',
+      args: [
+        proveArgs.withdrawal,
+        proveArgs.l2OutputIndex,
+        proveArgs.outputRootProof,
+        proveArgs.withdrawalProof,
+      ],
+    });
+
+    console.log('proveArgs', proveWithdrawalFunctionData);
 
     // console.log('Proving withdrawal...');
     // const proveHash = await walletClientL1.proveWithdrawal(proveArgs);
